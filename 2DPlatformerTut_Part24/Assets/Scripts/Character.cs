@@ -2,41 +2,76 @@
 using System.Collections;
 using System.Collections.Generic;
 
-//Contiene las funciones de todos los personajes de la clase "Character" del juego.
-//Las funciones "protected" permiten que su contenido sea usado por otros scripts que hereden de "Character", además del propio script.
-//"abstract" impide que el script sea asignado como un Gameobject y define una familia entera, en este caso "Character" define a todos los personajes del juego.
+/// <summary>
+/// Contains all the general functionality for all characters in the game
+/// </summary>
+public abstract class Character : MonoBehaviour {
 
-public abstract class Character : MonoBehaviour
-{
-
+    /// <summary>
+    /// The position the knife will spawn on
+    /// </summary>
     [SerializeField]
-    protected Transform knifePos; //Indica la posición en la que aparecerá el cuchillo del personaje.
+    protected Transform knifePos;
 
-    protected float movementSpeed; //Indica la velocidad de movimiento del personaje.
-
-    protected bool facingRight; //Indica si el personaje está mirando a la derecha.
-
+    /// <summary>
+    /// The characters movement speed
+    /// </summary>
     [SerializeField]
-    private GameObject knifePrefab; //Instancia el prefab del cuchillo.
+    protected float movementSpeed;
 
+    /// <summary>
+    /// Indicates if the character is facing right
+    /// </summary>
+    protected bool facingRight;
+
+    /// <summary>
+    /// The knife prefab, this is used for instantiating a knife
+    /// </summary>
     [SerializeField]
-    protected Stat healthStat; //Indica la vida del personaje.
+    private GameObject knifePrefab;
 
+    /// <summary>
+    /// The character's health
+    /// </summary>
     [SerializeField]
-    private EdgeCollider2D swordCollider; //Collider de la espada.
+    protected Stat healthStat;
 
+    /// <summary>
+    /// The character's sword collider
+    /// </summary>
     [SerializeField]
-    private List<string> damageSources; //Lista de cosas que dañan a los personajes.
+    private EdgeCollider2D swordCollider;
 
-    public abstract bool IsDead { get; } //Indica si el personaje está muerto.
+    /// <summary>
+    /// A list of damage sources (tags that can damage the character)
+    /// </summary>
+    [SerializeField]
+    private List<string> damageSources;
 
-    public bool Attack { get; set; } //Indica si el personaje puede atacar.
+    /// <summary>
+    /// Indicates if the character is dead
+    /// </summary>
+    public abstract bool IsDead { get; }
 
-    public bool TakingDamage { get; set; } //Indica si el personaje está recibiendo daño.
+    /// <summary>
+    /// Indicates if the character can attack
+    /// </summary>
+    public bool Attack { get; set; }
 
-    public Animator MyAnimator { get; private set; } //Referencia al animator del personaje.
+    /// <summary>
+    /// Indicates if the character is taking damage
+    /// </summary>
+    public bool TakingDamage { get; set; }
 
-    public EdgeCollider2D SwordCollider //Propiedad para tener el swordCollider.
+    /// <summary>
+    /// A reference to the character's animator
+    /// </summary>
+    public Animator MyAnimator { get; private set; }
+
+    /// <summary>
+    /// Property for getting the swordCollider
+    /// </summary>
+    public EdgeCollider2D SwordCollider
     {
         get
         {
@@ -51,7 +86,7 @@ public abstract class Character : MonoBehaviour
 
         MyAnimator = GetComponent<Animator>();
 
-        healthStat.Initialize(); //Inicializa la barra de vida del personaje.
+        healthStat.Initialize();
     }
 	
 	// Update is called once per frame
@@ -60,34 +95,51 @@ public abstract class Character : MonoBehaviour
 	
 	}
 
-    public abstract IEnumerator TakeDamage(); //Permite que el personaje reciba daño.
+    /// <summary>
+    /// Makes the character take damage
+    /// </summary>
+    /// <returns></returns>
+    public abstract IEnumerator TakeDamage();
 
-    public abstract void Death(); //Maneja la muerte de los personajes.
+    /// <summary>
+    /// Handles the character's death
+    /// </summary>
+    public abstract void Death();
 
-    public virtual void ChangeDirection() //Cambia la dirreción de los personajes.
+    /// <summary>
+    /// Changes the charcters direction
+    /// </summary>
+    public virtual void ChangeDirection()
     {
-        //Cambia la booleana "facingRight" a su valor negativo.
+        //Changes the facingRight bool to its negative value
         facingRight = !facingRight;
 
-        //Voltea al personaje cambiando su escala.
+        //Flips the character by changing the scale
         transform.localScale = new Vector3(transform.localScale.x * -1, 1, 1);
     }
 
-    public virtual void ThrowKnife(int value) //Lanza un cuchillo.
+    /// <summary>
+    /// Throws a knife
+    /// </summary>
+    /// <param name="value">0 = ground, 1 = layer</param>
+    public virtual void ThrowKnife(int value)
     {
-        if (facingRight) //Si está mirando a la derecha, tira el cuchillo a la derecha.
+        if (facingRight) //If we are facing right then throw the knife to the right
         {
             GameObject tmp = (GameObject)Instantiate(knifePrefab, knifePos.position, Quaternion.Euler(new Vector3(0, 0, -90)));
             tmp.GetComponent<Knife>().Initialize(Vector2.right);
         }
-        else //Si está mirando a la izquierda, tira el cuchillo a la izquierda.
+        else //If we are facing to the lft then throw the knife to the left.
         {
             GameObject tmp = (GameObject)Instantiate(knifePrefab, knifePos.position, Quaternion.Euler(new Vector3(0, 0, 90)));
             tmp.GetComponent<Knife>().Initialize(Vector2.left);
         }
     }
 
-    public void MeleeAttack() //Hace un ataque melee.
+    /// <summary>
+    /// Thows a melee attack
+    /// </summary>
+    public void MeleeAttack()
     {
         SwordCollider.enabled = true;
         Vector3 tmpPos = swordCollider.transform.position;
@@ -95,11 +147,16 @@ public abstract class Character : MonoBehaviour
         swordCollider.transform.position = tmpPos;
     }
  
-    public virtual void OnTriggerEnter2D(Collider2D other) //Se activa cuando el personaje choca con un objeto.
+    /// <summary>
+    /// If the character collides with another object
+    /// </summary>
+    /// <param name="other">The collider of the other object</param>
+    public virtual void OnTriggerEnter2D(Collider2D other)
     {
-        //Si el objeto con el que choca es una fuente de daño ejecuta la corutina de "TakeDamage"
+        //If the object we hit is a damage source
         if (damageSources.Contains(other.tag))
         {
+            //Run the take damage co routine
             StartCoroutine(TakeDamage());
         }
     }
