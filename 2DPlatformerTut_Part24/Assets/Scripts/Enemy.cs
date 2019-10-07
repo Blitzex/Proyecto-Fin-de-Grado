@@ -30,6 +30,37 @@ public class Enemy : Character
 
     private Canvas healthCavas; // El canvas de la vida del enemigo.
 
+    // Indica la fuerza de salto del enemigo.
+    [SerializeField]
+    private float jumpForce;
+
+    // Indica los puntos del mapa reconocidos como suelo.
+    [SerializeField]
+    private Transform[] groundPoints;
+
+    // Indica el radio que abarca el suelo.
+    [SerializeField]
+    private float groundRadius;
+
+    // Indica qué es suelo y qué no.
+    [SerializeField]
+    private LayerMask whatIsGround;
+
+    [SerializeField]
+    private bool airControl; //Indica cuando el enemigo se encuentra en el aire.
+
+    public bool Jump { get; set; } // Establece si el enemigo está saltando o no mediante una booleana.
+
+    public bool OnGround { get; set; } //Establece si el enemigo está en el suelo o no mediante una booleana.
+
+    private bool Falling  //Indica si el enemigo está cayendo mediante una booleana.
+    {
+        get
+        {
+            return MyAnimator.velocity.y < 0;
+        }
+    }
+
     //private bool dropItem = true;
 
     // Indica si el enemigo está en rango de ataque melee.
@@ -149,6 +180,27 @@ public class Enemy : Character
 
         // Llama a la función de entrada del estado actual.
         currentState.Enter(this);
+    }
+
+    // Se encarga de excepciones del movimiento del enemigo al saltar.
+    private void HandleMovement(float horizontal, float vertical)
+    {
+        if (Falling)
+        {
+            gameObject.layer = 10;
+            MyAnimator.SetBool("land", true);
+        }
+
+        MyAnimator.SetFloat("speed", Mathf.Abs(horizontal));
+    }
+
+    private void HandleInput()
+    {
+        if (Input.GetKeyDown(KeyCode.Space) && !Falling)
+        {
+            MyAnimator.SetTrigger("jump");
+            Jump = true;
+        }
     }
 
     // Mueve al enemigo.
