@@ -23,10 +23,10 @@ public class Enemy : Character
     private Vector3 startPos; // Posicion inicial del enemigo al darle al Play.
 
     [SerializeField]
-    private Transform leftEdge; // Indica la zona máxima del borde izquierdo del mapa al que puede acceder el enemigo.
+    public Transform leftEdge; // Indica la zona máxima del borde izquierdo del mapa al que puede acceder el enemigo.
 
     [SerializeField]
-    private Transform rightEdge; // Indica la zona máxima del borde derecho del mapa al que puede acceder el enemigo.
+    public Transform rightEdge; // Indica la zona máxima del borde derecho del mapa al que puede acceder el enemigo.
 
     private Canvas healthCavas; // El canvas de la vida del enemigo.
 
