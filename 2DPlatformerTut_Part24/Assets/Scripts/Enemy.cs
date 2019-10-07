@@ -2,50 +2,37 @@
 using System.Collections;
 using System;
 
-/// <summary>
-/// The enemy's class
-/// </summary>
+// La clase del personaje enemigo.
 public class Enemy : Character
 {
 
-    /// <summary>
-    /// The enemy's current state
-    /// changing this will change the enemys behaviour
-    /// </summary>
+    // El estado actual del enemigo, cambiar esto afectará a su comportamiento.
     private IEnemyState currentState;
 
-    /// <summary>
-    /// The enemy's target
-    /// </summary>
+    // Indica el objetivo a por el que deberá ir el enemigo, bajo la etiqueta "target".
     public GameObject Target { get; set; }
 
-    /// <summary>
-    /// The enemy's melee range, at what range does the enemy need to use the sword
-    /// </summary>
+    // Indica el rango del ataque melee del enemigo, y cuando debe dejar de usar cuchillos y usar la espada (por proximidad al personaje).
     [SerializeField]
     private float meleeRange;
 
-    /// <summary>
-    /// The enemy's throw range, how far can it start throwing knifes
-    /// </summary>
+    // Indica el rango de lanzamiento del enemigo, es decir, desde que punto puede empezar a lanzar cuchillos al personaje.
     [SerializeField]
     private float throwRange;
 
-    private Vector3 startPos;
+    private Vector3 startPos; // Posicion inicial del enemigo al darle al Play.
 
     [SerializeField]
-    private Transform leftEdge;
+    private Transform leftEdge; // Indica la zona máxima del borde izquierdo del mapa al que puede acceder el enemigo.
 
     [SerializeField]
-    private Transform rightEdge;
+    private Transform rightEdge; // Indica la zona máxima del borde derecho del mapa al que puede acceder el enemigo.
 
-    private Canvas healthCavas;
+    private Canvas healthCavas; // El canvas de la vida del enemigo.
 
-    private bool dropItem = true;
+    //private bool dropItem = true;
 
-    /// <summary>
-    /// Indicates if the enemy is in melee range
-    /// </summary>
+    // Indica si el enemigo está en rango de ataque melee.
     public bool InMeleeRange
     {
         get
@@ -60,9 +47,7 @@ public class Enemy : Character
         }
     }
 
-    /// <summary>
-    /// Indicates if the enemy is in throw range
-    /// </summary>
+    // Indica si el enemigo está en rango de lanzamiento.
     public bool InThrowRange
     {
         get
@@ -77,9 +62,7 @@ public class Enemy : Character
         }
     }
 
-    /// <summary>
-    /// Indicates if the enemy is dead
-    /// </summary>
+    // Indica si el enemigo está muerto.
     public override bool IsDead
     {
         get
@@ -90,15 +73,15 @@ public class Enemy : Character
 
     // Use this for initialization
     public override void Start()
-    {   //Calls the base start
+    {   // Llama a la base start.
         base.Start();
 
         this.startPos = transform.position;
 
-        //Makes the RemoveTarget function listen to the player's Dead event
+        // Hace que la función RemoveTarget esté pediente del DeadEvent.
         Player.Instance.Dead += new DeadEventHandler(RemoveTarget);
 
-        //Sets the enemy in idle state
+        // Situa al enemigo en posición idle.
         ChangeState(new IdleState());
 
         healthCavas = transform.GetComponentInChildren<Canvas>();
@@ -109,93 +92,84 @@ public class Enemy : Character
     // Update is called once per frame
     void Update()
     {
-        if (!IsDead) //If the enemy i alive
+        if (!IsDead) // Si el enemigo está vivo.
         {
-            if (!TakingDamage) //if we aren't taking damage
+            if (!TakingDamage) // Y no estamos recibiendo daño.
             {
-                //Execute the current state, this can make the enemy move or attack etc.
+                // Ejecuta el currentState (estado actual) permitiendo que el enemigo empiece a moverse o a atacar.
                 currentState.Execute();
             }
 
-            //Makes the enemy look at his target
+            // Hace que el enemigo mire al target.
             LookAtTarget();
         }
 
     }
 
-    /// <summary>
-    /// Removes the enemy's target
-    /// </summary>
+    // Elimina el target del enemigo.
     public void RemoveTarget()
     {
-        //Removes the target
+        // Elimina el target.
         Target = null;
 
-        //Changes the state to a patrol state
+        // Cambia el estado a patrulla.
         ChangeState(new PatrolState());
     }
 
-    /// <summary>
-    /// Makes the enemy look at the target
-    /// </summary>
+    // Hace que el enemigo mire al target.
     private void LookAtTarget()
     {
-        //If we have a target
+        // Si hay un target.
         if (Target != null)
         {
-            //Calculate the direction
+            // Calcula la dirección.
             float xDir = Target.transform.position.x - transform.position.x;
 
-            //If we are turning the wrong way
+            // Si está mirando en la dirección equivocada.
             if (xDir < 0 && facingRight || xDir > 0 && !facingRight)
             {
-                //Look in the right direction
+                // Mira en la otra dirección.
                 ChangeDirection();
             }
         }
     }
 
-    /// <summary>
-    /// Changes the enemy's state
-    /// </summary>
-    /// <param name="newState">The new state</param>
+    // Cambia el estado del enemigo.
     public void ChangeState(IEnemyState newState)
     {
-        //If we have a current state
+        // Si ya tiene un estado actual.
         if (currentState != null)
         {
-            //Call the exit function on the state
+            // Llama a la función de salida del estado.
             currentState.Exit();
         }
 
-        //Sets the current state as the new state
+        // Establece el estado actual como el nuevo estado.
         currentState = newState;
 
-        //Calls the enter function on the current state
+        // Llama a la función de entrada del estado actual.
         currentState.Enter(this);
     }
 
-    /// <summary>
-    /// Moves the enemy
-    /// </summary>
+    // Mueve al enemigo.
     public void Move()
     {
-        //If the enemy isn't attacking
+        // Si el enemigo no está atacando.
         if (!Attack)
         {
             if ((GetDirection().x > 0 && transform.position.x < rightEdge.position.x) || (GetDirection().x < 0 && transform.position.x > leftEdge.position.x))
             {
-                //Sets the speed to 1 to player the move animation
+                // Establece la velocidad a 1 para reproducir la animación de movimiento.
                 MyAnimator.SetFloat("speed", 1);
 
-                //Moves the enemy in the correct direction
+                // Mueve al enemigo en la dirección correcta.
                 transform.Translate(GetDirection() * (movementSpeed * Time.deltaTime));
             }
-            else if (currentState is PatrolState)
+            else if (currentState is PatrolState) // Si se encuentra en estado de patrulla cambia su dirreción.
             {
                 ChangeDirection();
             }
-            else if (currentState is RangedState)
+            else if (currentState is RangedState) // Si se encuentra en estado de rango elimina el target y cambia a estado idle.
             {
                 Target = null;
                 ChangeState(new IdleState());
@@ -205,32 +179,23 @@ public class Enemy : Character
 
     }
 
-    /// <summary>
-    /// Gets the current direction
-    /// </summary>
-    /// <returns>The direction</returns>
+    // Obtiene la dirección actual.
     public Vector2 GetDirection()
     {
         return facingRight ? Vector2.right : Vector2.left;
     }
 
-    /// <summary>
-    /// If the enemy collides with an object
-    /// </summary>
-    /// <param name="other">The colliding object</param>
+    // Si el enemigo colisiona con un objeto.
     public override void OnTriggerEnter2D(Collider2D other)
     {
-        //calls the base on trigger enter
+        // Llama a la base OnTriggerEnter.
         base.OnTriggerEnter2D(other);
 
-        //Calls OnTriggerEnter on the current state
+        // Llama a OnTriggerEnter en el estado actual.
         currentState.OnTriggerEnter(other);
     }
 
-    /// <summary>
-    /// Makes the enemy take damage
-    /// </summary>
-    /// <returns></returns>
+    // Hace que el enemigo reciba daño.
     public override IEnumerator TakeDamage()
     {
         if (!healthCavas.isActiveAndEnabled)
@@ -241,30 +206,28 @@ public class Enemy : Character
         //Reduces the health
         healthStat.CurrentValue -= 10;
 
-        if (!IsDead) //If the enemy isn't dead then play the damage animation
+        if (!IsDead) // Si el enemigo no está muerto ejecuta la animación de recibir daño.
         {
             MyAnimator.SetTrigger("damage");
         }
-        else //If the enemy is dead then make sure that we play the dead animation
+        else // Si el enemigo está muerto, se asegura de ejecutar la animación de muerte.
         {
-            if (dropItem)
-            {
-                GameObject coin = (GameObject)Instantiate(GameManager.Instance.CoinPrefab, new Vector3(transform.position.x, transform.position.y + 5), Quaternion.identity);
-                Physics2D.IgnoreCollision(GetComponent<Collider2D>(), coin.GetComponent<Collider2D>());
-                dropItem = false;
-            }
+            //if (dropItem)
+            //{
+            //    GameObject coin = (GameObject)Instantiate(GameManager.Instance.CoinPrefab, new Vector3(transform.position.x, transform.position.y + 5), Quaternion.identity);
+            //    Physics2D.IgnoreCollision(GetComponent<Collider2D>(), coin.GetComponent<Collider2D>());
+            //    dropItem = false;
+            //}
    
             MyAnimator.SetTrigger("die");
             yield return null;
         }
     }
 
-    /// <summary>
-    /// Removes the enemy from the game
-    /// </summary>
+    // Elimina al enemigo del juego.
     public override void Death()
     {
-        dropItem = true;
+        //dropItem = true;
         MyAnimator.ResetTrigger("die");
         MyAnimator.SetTrigger("idle");
         healthStat.CurrentValue = healthStat.MaxVal;
@@ -272,6 +235,7 @@ public class Enemy : Character
         healthCavas.enabled = false;
     }
 
+    // Cambia la dirección del enemigo.
     public override void ChangeDirection()
     {
         Transform tmp = transform.Find("EnemyHealthBarCanvas").transform;
