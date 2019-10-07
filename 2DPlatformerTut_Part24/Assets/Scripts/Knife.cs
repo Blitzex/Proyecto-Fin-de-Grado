@@ -2,8 +2,11 @@
 using System.Collections;
 
 [RequireComponent(typeof(Rigidbody2D))]
+
+// La clase del objeto arrojadizo, el cuchillo.
 public class Knife : MonoBehaviour
 {
+    // Indica la velocidad a la que va el cuchillo.
     [SerializeField]
     private float speed;
 
@@ -14,12 +17,12 @@ public class Knife : MonoBehaviour
 	// Use this for initialization
 	void Start () {
 
-        myRigidbody = GetComponent<Rigidbody2D>();
+        myRigidbody = GetComponent<Rigidbody2D>(); // Le asigna un rigidbody al cuchillo.
 	}
 
     void FixedUpdate()
     {
-        myRigidbody.velocity = direction * speed;
+        myRigidbody.velocity = direction * speed; // Determina la velocidad del cuchillo.
              
     }
 
@@ -30,6 +33,6 @@ public class Knife : MonoBehaviour
 
     void OnBecameInvisible()
     {
-        Destroy(gameObject);
+        Destroy(gameObject); // Destruye el cuchillo cuando se deja de ver en pantalla.
     }
 }
