@@ -76,7 +76,6 @@ namespace FuzzyLogicApp
             WriteLine("12 reglas agregadas \n");
 
             WriteLine("3) Resolución de casos prácticos", true);
-            
             system.ResetCase();
             WriteLine("Caso 1:", true);
             WriteLine("T = 30 (Muy Poco)");
