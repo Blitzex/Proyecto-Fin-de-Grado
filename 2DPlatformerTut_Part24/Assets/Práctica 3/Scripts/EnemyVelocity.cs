@@ -9,8 +9,8 @@ namespace FuzzyLogicApp
     {
         public Transform centro;
         public Transform playerPosition;
-        float tiempoRest = 200;
-        float distanciaCentro = 900;
+        public float tiempoRest = 200;
+        public float distanciaCentro = 900;
         public double enemyVelocity;
         void Update()
         {
@@ -19,7 +19,6 @@ namespace FuzzyLogicApp
             {
                 tiempoRest -= Time.deltaTime;
             }
-            Debug.Log(tiempoRest);
 
             // Creación del sistema
             WriteLine("Gestión de la velocidad de los enemigos", true);
@@ -27,12 +26,12 @@ namespace FuzzyLogicApp
 
             WriteLine("1) Agregar las variables", true);
 
-            // Agregar la variable lingüística "Proximidad" (de 0 a 900 m)
+            // Agregar la variable lingüística "Proximidad" (de 0 a 95 m)
             WriteLine("Agregar la variable Proximidad");
-            LinguisticVariable proximidad = new LinguisticVariable("Proximidad", 0, 900);
-            proximidad.AddValue(new LinguisticValue("Lejos", new LeftFuzzySet(0, 900, 300, 400)));
-            proximidad.AddValue(new LinguisticValue("Media", new TrapezoidalFuzzySet(0, 900, 300, 400, 600, 700)));
-            proximidad.AddValue(new LinguisticValue("Cerca", new RightFuzzySet(0, 900, 600, 700)));
+            LinguisticVariable proximidad = new LinguisticVariable("Proximidad", 0, 95);
+            proximidad.AddValue(new LinguisticValue("Cerca", new LeftFuzzySet(0, 95, 0, 30)));
+            proximidad.AddValue(new LinguisticValue("Media", new TrapezoidalFuzzySet(0, 95, 0, 30, 20, 50)));
+            proximidad.AddValue(new LinguisticValue("Lejos", new RightFuzzySet(0, 95, 40, 65)));
             system.addInputVariable(proximidad);
 
             // Agregar la variable lingüística "Tiempo" (de 0 a 200 s)
@@ -44,12 +43,12 @@ namespace FuzzyLogicApp
             tiempo.AddValue(new LinguisticValue("Mucho", new RightFuzzySet(0, 200, 140, 160)));
             system.addInputVariable(tiempo);
 
-            // Agregar la variable lingüística "Velocidad" (de 1 a 5)
+            // Agregar la variable lingüística "Velocidad" (de 500 a 5000)
             WriteLine("Agregar la variable Velocidad");
-            LinguisticVariable velocidad = new LinguisticVariable("Velocidad", 0, 5);
-            velocidad.AddValue(new LinguisticValue("Lenta", new LeftFuzzySet(0, 5, 1, 2)));
-            velocidad.AddValue(new LinguisticValue("Normal", new TrapezoidalFuzzySet(0, 5, 1, 2, 3, 4)));
-            velocidad.AddValue(new LinguisticValue("Rápida", new RightFuzzySet(0, 5, 3, 4)));
+            LinguisticVariable velocidad = new LinguisticVariable("Velocidad", 500, 5000);
+            velocidad.AddValue(new LinguisticValue("Lenta", new LeftFuzzySet(500, 5000, 1000, 2000)));
+            velocidad.AddValue(new LinguisticValue("Normal", new TrapezoidalFuzzySet(500, 5000, 1000, 2000, 3000, 4000)));
+            velocidad.AddValue(new LinguisticValue("Rápida", new RightFuzzySet(500, 5000, 3000, 4000)));
             system.addOutputVariable(velocidad);
 
             WriteLine("2) Agregar las reglas", true);
@@ -76,7 +75,6 @@ namespace FuzzyLogicApp
             WriteLine("12 reglas agregadas \n");
 
             WriteLine("3) Resolución de casos prácticos", true);
-            system.ResetCase();
             WriteLine("Caso 1:", true);
             WriteLine("T = 30 (Muy Poco)");
             WriteLine("P = 800 (Cerca)");
@@ -84,6 +82,7 @@ namespace FuzzyLogicApp
             system.SetInputVariable(proximidad, distanciaCentro);
             WriteLine("Resultado: " + system.Solve() + "\n");
             enemyVelocity = system.Solve();
+            system.ResetCase();
 
             //// Caso práctico 2: Tiempo de 180s, proximidad a la meta de 280m
             //system.ResetCase();
