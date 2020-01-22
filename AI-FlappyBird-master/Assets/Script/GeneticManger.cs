@@ -23,10 +23,11 @@ public class GeneticManger : MonoBehaviour
         }
     }
 
+    //Inicia la primera generación y comienza el testeo
+
     private void Start()
     {
         InstaPopulation();
-        //Start The Generation Test   
         GameManager.singleton.numberOfFlappyBird = PopulationLength;
         GameManager.singleton.currentFitness = 0;
         isRePopulition = false;
@@ -173,6 +174,8 @@ public class GeneticManger : MonoBehaviour
 
         }
     }
+
+    //controla los errores que ocurren cuando un hijo no coge la información genética y muta.
 
     private void Mutate()
     {
