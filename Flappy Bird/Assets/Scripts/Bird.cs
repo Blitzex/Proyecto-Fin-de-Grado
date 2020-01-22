@@ -23,13 +23,15 @@ public class Bird : MonoBehaviour {
     public event EventHandler OnStartedPlaying;
 
     private Rigidbody2D birdRigidbody2D;
-    private State state;
+    public State state;
 
-    private enum State {
+    public enum State {
         WaitingToStart,
         Playing,
         Dead
     }
+
+    public bool muerto;
 
     //Hace referencia al RigidBody2D de Unity para el pájaro.
 
@@ -38,7 +40,16 @@ public class Bird : MonoBehaviour {
         birdRigidbody2D = GetComponent<Rigidbody2D>();
         birdRigidbody2D.bodyType = RigidbodyType2D.Static;
         state = State.WaitingToStart;
+
+
+
+        birdRigidbody2D = gameObject.GetComponent<Rigidbody2D>();
+        //gameObject.GetComponent<Rigidbody2D>();
+        //sr.color = new Color(UnityEngine.Random.Range(0f, 1f), UnityEngine.Random.Range(0f, 1f), UnityEngine.Random.Range(0f, 1f));
+        GetComponent<SpriteRenderer>().material.color = new Color(UnityEngine.Random.Range(0f, 1f), UnityEngine.Random.Range(0f, 1f), UnityEngine.Random.Range(0f, 1f));
+
     }
+
 
     private void Update() {
         switch (state) {
@@ -59,9 +70,21 @@ public class Bird : MonoBehaviour {
 
             // Rota el personaje cuando salta. 
             transform.eulerAngles = new Vector3(0, 0, birdRigidbody2D.velocity.y * .15f);
+                muerto = false;
             break;
         case State.Dead:
+                muerto = true;
+               // fitness = ControllerGame.I.time;
             break;
+        }
+    }
+
+
+    void Flap()
+    {
+        if (!muerto)
+        {
+            birdRigidbody2D.velocity = new Vector2(0, JUMP_AMOUNT);
         }
     }
 
