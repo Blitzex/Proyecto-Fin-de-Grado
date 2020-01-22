@@ -1,4 +1,6 @@
-﻿using System.Collections;
+﻿
+
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
@@ -30,9 +32,6 @@ public class GameOverWindow : MonoBehaviour {
         Hide();
 
     }
-
-   
-
 
     private void Update() {
         if (Input.GetKeyDown(KeyCode.Space)) {
