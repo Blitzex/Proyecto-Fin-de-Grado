@@ -40,8 +40,7 @@ public class Bird : MonoBehaviour
 
     private Vector2 GetCurrentWallPos()
     {
-        GameObject currentWall =
-             GameManager.singleton.GetWallByIndex(currentWallIndex);
+        GameObject currentWall = GameManager.singleton.GetWallByIndex(currentWallIndex);
 
         Vector2 currentWallPos = currentWall.transform.position;
         currentWallPos.x += 0.8f;
@@ -67,6 +66,7 @@ public class Bird : MonoBehaviour
     {
         GetComponent<Rigidbody2D>().velocity = Vector2.zero;
         GetComponent<Rigidbody2D>().AddForce(Vector2.up * jumpPower);
+
         //transform.eulerAngles = new Vector3(0, 0, birdRigidbody2D.velocity.y * .15f);
 
     }

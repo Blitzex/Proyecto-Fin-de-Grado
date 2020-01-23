@@ -142,7 +142,7 @@ public class GeneticManger : MonoBehaviour
     private void FillThePopulationWithTheBestPopulation()
     {
         int Index = 0;
-        //Put the 25% of The best population in the new population Without do nothing
+        //Situa al 25% de de la BestPopulation en la nueva generación
         for (int i = PopulationLength / 4; i < PopulationLength / 2; i++)
         {
             Population[i] = new Dna();
@@ -160,7 +160,7 @@ public class GeneticManger : MonoBehaviour
 
     private void FillTheRestPopulationWithNewDna()
     {
-        //The Rest Of the population  (50%) Make it New
+        //El resto de la población se generan de nuevo
         for (int i = PopulationLength / 2; i < PopulationLength; i++)
         {
             Population[i] = new Dna();
